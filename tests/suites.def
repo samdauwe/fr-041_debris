@@ -1,0 +1,65 @@
+/* The test suites, in the order they are started.
+ *
+ *   SUITE(<name>, <function>, <time limit in seconds>, <SUITE_* flags or 0>, <arguments...>, NULL)
+ *
+ * The function is `int <function>(int argc, char **argv)` and finds its arguments in argv[1...]; ASSETS is the directory with
+ * the shipped data (assets/), DATA the reference fixtures (tests/data/). The limits are generous: a sanitizer build multiplies
+ * them through DEBRIS_TEST_TIMEOUT_SCALE. */
+
+/* the libraries */
+SUITE("linkage", suite_linkage, 60, 0, NULL)
+SUITE("v2", suite_v2, 300, 0, NULL)
+SUITE("v2_alloc", suite_v2_alloc, 120, 0, NULL)
+SUITE("wz3", suite_wz3, 900, 0, NULL)
+SUITE("wz3_dxt5", suite_wz3_dxt5, 120, 0, DATA, NULL)
+SUITE("wz3_mesh", suite_wz3_mesh, 600, 0, ASSETS, DATA, NULL)
+SUITE("wz3_minmesh", suite_wz3_minmesh, 600, 0, ASSETS, DATA, NULL)
+SUITE("wz3_runtime", suite_wz3_runtime, 300, 0, ASSETS, DATA, NULL)
+SUITE("wz3_text_m2", suite_wz3_text, 600, 0, ASSETS, DATA, "-2", NULL)
+SUITE("wz3_text_0", suite_wz3_text, 600, 0, ASSETS, DATA, "0", NULL)
+SUITE("wz3_frame", suite_wz3_frame, 600, 0, ASSETS, DATA, NULL)
+SUITE("wz3_render_plan", suite_wz3_render_plan, 300, 0, DATA, NULL)
+SUITE("wz3_geometry", suite_wz3_geometry, 300, 0, ASSETS, DATA, NULL)
+SUITE("wz3_host", suite_wz3_host, 600, 0, ASSETS, NULL)
+SUITE("wz3_material_view", suite_wz3_material_view, 300, 0, ASSETS, DATA, NULL)
+SUITE("wz3_texture_plan", suite_wz3_texture_plan, 600, 0, ASSETS, DATA, NULL)
+SUITE("wz3_render_boundary", suite_wz3_render_boundary, 600, 0, ASSETS, DATA, NULL)
+SUITE("wz3_draw_list", suite_wz3_draw_list, 300, 0, DATA, NULL)
+SUITE("wz3_draw_list_frames", suite_wz3_draw_list_frames, 900, 0, ASSETS, DATA, NULL)
+SUITE("wz3_pose_geometry", suite_wz3_pose_geometry, 900, 0, ASSETS, DATA, NULL)
+SUITE("wz3_shadow", suite_wz3_shadow, 300, 0, DATA, NULL)
+SUITE("wz3_shadow_recipes", suite_wz3_shadow_recipes, 900, 0, ASSETS, DATA, NULL)
+SUITE("glr_trace", suite_glr_trace, 120, 0, DATA, NULL)
+SUITE("glr_frames", suite_glr_frames, 1800, 0, ASSETS, DATA, NULL)
+SUITE("glr_egl", suite_glr_egl, 120, SUITE_SOFTWARE_GL, NULL)
+SUITE("glr_egl_frames", suite_glr_egl_frames, 1800, SUITE_SOFTWARE_GL, ASSETS, DATA, NULL)
+
+/* the player's SDL-free core */
+SUITE("player_core", suite_player_core, 300, 0, ASSETS "/debris_loader.v2m", ASSETS "/debris_party.kx",
+      DATA "/replay_sequence.txt", NULL)
+SUITE("player_load", suite_player_load, 600, 0, ASSETS "/debris_party.kx", NULL)
+SUITE("player_scene", suite_player_scene, 900, 0, ASSETS "/debris_party.kx", NULL)
+SUITE("player_scene_egl", suite_player_scene_egl, 1800, SUITE_SOFTWARE_GL, ASSETS "/debris_party.kx", NULL)
+SUITE("player_text", suite_player_text, 60, 0, NULL)
+SUITE("player_credits", suite_player_credits, 60, 0, NULL)
+SUITE("player_glcheck", suite_player_glcheck, 60, 0, NULL)
+SUITE("player_effects_replay", suite_player_effects_replay, 900, 0, ASSETS "/debris_party.kx", NULL)
+SUITE("player_args", suite_player_args, 60, 0, NULL)
+SUITE("player_replay", suite_player_replay, 300, 0, ASSETS "/debris_party.kx", NULL)
+
+/* the player executable, started headless (SDL offscreen video, dummy audio); they skip without an OpenGL ES context */
+SUITE("player_licenses", suite_player_cli, 60, 0, "licenses", NULL)
+SUITE("player_bad_args", suite_player_cli, 60, 0, "bad_args", NULL)
+SUITE("player_missing_kx", suite_player_cli, 60, 0, "missing_kx", NULL)
+SUITE("player_seek_replay", suite_player_cli, 300, 0, "seek_replay", NULL)
+SUITE("player_fixed_time", suite_player_cli, 300, 0, "fixed_time", NULL)
+SUITE("player_gl_check", suite_player_cli, 300, 0, "gl_check", NULL)
+SUITE("player_overlay", suite_player_cli, 300, 0, "overlay", NULL)
+SUITE("player_soak_short", suite_player_cli, 300, 0, "soak_short", NULL)
+SUITE("player_cancel_loading", suite_player_cli, 300, SUITE_SERIAL, "cancel_loading", NULL)
+SUITE("player_live_session", suite_player_cli, 300, SUITE_SERIAL, "live_session", NULL)
+SUITE("player_live_no_audio", suite_player_cli, 300, SUITE_SERIAL, "live_no_audio", NULL)
+SUITE("player_window", suite_player_cli, 300, SUITE_SERIAL, "window", NULL)
+#ifdef DEBRIS_TEST_SOAK
+SUITE("player_soak_long", suite_player_cli, 1500, SUITE_SERIAL, "soak_long", NULL)
+#endif

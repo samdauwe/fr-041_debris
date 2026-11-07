@@ -1,0 +1,266 @@
+document ops 16478 events 95 splines 11 bpm 12845056 length 93388800 buzz 1
+F 0 0 0 0 active 5c7cbbf9 execs 7377 chain fd70888a anim 6046a1ba events 32853fd env ba96448c dynamic 0
+F 1 1012500 4916656 22959 active b39bd09 execs 26084 chain aabbb799 anim 27435a52 events 32853fd env 2dcab5cc dynamic 0
+F 2 2025000 9833313 45918 active d8e45f4f execs 17159 chain eb6a0774 anim 53258ea7 events 32853fd env 7be350f8 dynamic 0
+F 3 3037500 14749970 68877 active a785774c execs 10848 chain 246ce589 anim 296e81e5 events 32853fd env 517e61dc dynamic 0
+F 4 4050000 19666627 91836 active f9a701f8 execs 378 chain 75f9baf3 anim f6e64899 events 32853fd env 4b4ad1c dynamic 0
+F 5 5062500 24583283 114795 active 85bae137 execs 3897 chain b9d41e41 anim 90c673d0 events 32853fd env 103d4f3c dynamic 0
+F 6 6075000 29499940 137755 active 2a18dec6 execs 25198 chain 3b0db7c6 anim 8d299384 events 32853fd env 357e61dc dynamic 0
+F 7 7087500 34416597 160714 active 55f07b58 execs 21289 chain 69886076 anim 61247d87 events 32853fd env 37e5ee00 dynamic 0
+F 8 8100000 39333254 183673 active 3e469b90 execs 3627 chain bc1728ae anim b6d200a7 events 32853fd env 21b4ad1c dynamic 0
+F 9 9112500 44249911 206632 active f917528d execs 1360 chain bce89e2d anim cb7ba44a events 32853fd env 87dd5fcc dynamic 0
+F 10 10125000 49166567 229591 active e14a415a execs 13965 chain db48e852 anim 8666654e events 32853fd env 963d4f3c dynamic 0
+F 11 11137500 54083224 252551 active 14223b7e execs 5172 chain cc2bca2 anim cb5209de events 32853fd env d3827c8c dynamic 0
+F 12 12150000 58999881 275510 active 46e02c1b execs 13158 chain 45ca7e47 anim cb5209de events 32853fd env ff7e61dc dynamic 0
+F 13 13162500 63916538 298469 active cd9db85c execs 4131 chain e4ae4be3 anim ce6e324e events 32853fd env f0a0138c dynamic 0
+F 14 14175000 68833195 321428 active a097d95 execs 24217 chain f774a1f8 anim 629a112e events 32853fd env cce5ee00 dynamic 0
+F 15 15187500 73749851 344387 active a4169d99 execs 3874 chain 17e7ce6a anim c1f2bd20 events 32853fd env e5a5a9f8 dynamic 0
+F 16 16200000 78666508 367346 active af4644ea execs 13601 chain 7188dc67 anim 4fdf4214 events 32853fd env 70b4ad1c dynamic 0
+F 17 17212500 83583165 390306 active 539a43be execs 5097 chain 7b3c0e93 anim 32a5a9fb events 32853fd env 6e58360c dynamic 0
+F 18 18225000 88499822 413265 active 8f36f270 execs 1674 chain 49906c86 anim a3085de1 events 32853fd env b8dd5fcc dynamic 0
+F 19 19237500 93416478 436224 active 50c5d1f execs 129 chain 5736350f anim a3085de1 events 32853fd env caeb223c dynamic 0
+F 20 1000000 4855957 22675 active b39bd09 execs 26084 chain dbea90c5 anim cf455ffd events 32853fd env ad64113c dynamic 0
+F 21 1000001 4855962 22675 active b39bd09 execs 26084 chain 66559a88 anim 2d93aa66 events 32853fd env da77b3c dynamic 0
+F 22 1000002 4855967 22675 active b39bd09 execs 26084 chain 257c1e50 anim 5a784796 events 32853fd env 8302638c dynamic 0
+F 23 44100 214147 1000 active 52fee2a7 execs 7372 chain 33062e4e anim 7dddea7a events 32853fd env 6d9a978c dynamic 0
+F 24 44101 214152 1000 active 52fee2a7 execs 7372 chain c464fd09 anim ac4bf249 events 32853fd env 68ce648c dynamic 0
+S 0 3 b88a0294
+S 1 4 71c02f8f
+S 2 3 535a9fa0
+S 3 3 88951844
+S 4 4 133f029d
+S 5 3 a38fd201
+S 6 3 7a5fa5a8
+S 7 3 7e5dd389
+S 8 3 249ac6d
+S 9 3 e90712b6
+S 10 1 21c21b01
+B 3340 24 Spline 4 9 9a747026
+B 3341 25 ShakerSpline 0 27 d9f798fe
+B 11782 24 Spline 2 9 93087716
+B 11783 25 ShakerSpline 0 27 fac68980
+B 11844 24 Spline 2 9 10883986
+B 11893 24 Spline 2 9 fc7a6111
+B 11894 25 ShakerSpline 0 27 c294242c
+B 12238 24 Spline 6 9 45a66531
+B 12246 24 Spline 5 9 bc2077ea
+B 12254 24 Spline 5 9 19815841
+B 12264 24 Spline 6 9 7c088076
+B 12265 25 ShakerSpline 0 27 6a6ccb98
+B 12298 24 Spline 4 9 d7b76ce1
+B 12299 25 ShakerSpline 0 27 d1396049
+B 12320 24 Spline 5 9 4561008a
+B 12321 25 ShakerSpline 0 27 e6a8dcf5
+B 12350 24 Spline 3 9 17ba3ccb
+B 12421 24 Spline 5 9 7ab06498
+B 12422 25 ShakerSpline 0 27 a998540b
+B 12763 24 Spline 6 9 2dc1022b
+B 12764 25 ShakerSpline 0 27 dce0bd67
+B 12765 25 ShakerSpline 0 27 8cda11c8
+B 12964 24 Spline 5 9 93a0a580
+B 12965 25 ShakerSpline 0 27 b33b1aca
+B 12966 25 ShakerSpline 0 27 7e589719
+B 13020 24 Spline 7 9 8bd6d55a
+B 13047 24 Spline 9 9 66f8ef49
+B 13048 25 ShakerSpline 0 27 6dcb9c71
+B 13155 24 Spline 6 9 70fd7fb4
+B 13156 25 ShakerSpline 0 27 59864a4d
+B 13165 24 Spline 2 9 7ac9043
+B 13280 24 Spline 2 9 6b44288c
+B 13281 25 ShakerSpline 0 27 3dd38da
+B 13304 24 Spline 5 9 25df58bb
+B 13305 25 ShakerSpline 0 27 f4e98757
+B 13313 24 Spline 5 9 cdd919dd
+B 13322 24 Spline 5 9 28bc56a8
+B 13323 25 ShakerSpline 0 27 786d1ef1
+B 13330 24 Spline 2 9 c84cd7f0
+B 13331 25 ShakerSpline 0 27 8e2cbadd
+B 13338 24 Spline 5 9 cdd919dd
+B 13389 24 Spline 10 9 b7d435ed
+B 13402 24 Spline 10 9 5eba1be5
+B 13451 24 Spline 8 9 76b62ecc
+B 13478 24 Spline 8 9 6c05a9cc
+B 13494 24 Spline 8 9 38119147
+B 13502 24 Spline 8 9 c0f3317c
+B 13599 24 Spline 3 9 d02bafb9
+B 13608 24 Spline 6 9 fb38d6ce
+B 13609 25 ShakerSpline 0 27 29e315da
+B 13610 25 ShakerSpline 0 27 8afec52d
+B 13611 22 ShakerSpline 0 27 8afec52d
+B 13707 24 Spline 3 9 5f123171
+B 13715 24 Spline 4 9 65de7e70
+B 13723 24 Spline 6 9 ba0e0eae
+B 13742 24 Spline 3 9 2a5d0e3c
+B 13801 24 Spline 6 9 d3b96245
+B 13812 24 Spline 4 9 f31ec0d4
+B 13852 24 Spline 6 9 40eca08
+B 13853 25 ShakerSpline 0 27 e24c0481
+B 13854 25 ShakerSpline 0 27 705f947a
+B 13855 25 ShakerSpline 0 27 287c169b
+B 13864 24 Spline 3 9 7248005a
+B 13865 25 ShakerSpline 0 27 eb5663b8
+B 13866 25 ShakerSpline 0 27 a6519d2d
+B 13888 24 Spline 6 9 a628f6a5
+B 13896 24 Spline 7 9 fbb7f7f4
+B 13897 25 ShakerSpline 0 27 271f469b
+B 13898 25 ShakerSpline 0 27 2f757b94
+B 13902 24 Spline 3 9 6cd6d956
+B 14031 24 Spline 4 9 a9a023b1
+B 14032 25 ShakerSpline 0 27 f29cbf84
+B 14033 25 ShakerSpline 0 27 76487778
+B 14128 24 Spline 8 9 d80d572e
+B 14129 25 ShakerSpline 0 27 7beca2b5
+B 14130 25 ShakerSpline 0 27 80c19d17
+B 14146 24 Spline 10 9 b6bd3b66
+B 14147 25 ShakerSpline 0 27 419d537e
+B 14173 24 Spline 10 9 179f73ef
+B 14186 24 Spline 3 9 c6a04217
+B 14187 25 ShakerSpline 0 27 91a79c51
+B 14216 24 Spline 2 9 c7564ca1
+B 14217 25 ShakerSpline 0 27 5c417b7f
+B 14246 24 Spline 2 9 d1bccc89
+B 14247 25 ShakerSpline 0 27 2288a404
+B 14271 24 Spline 2 9 bb252786
+B 14272 25 ShakerSpline 0 27 7c072483
+B 14303 24 Spline 3 9 45d5f119
+B 14304 25 ShakerSpline 0 27 59734975
+B 14407 24 Spline 4 9 16abb6a7
+B 14408 25 ShakerSpline 0 27 e8df869a
+B 14451 24 Spline 14 9 7cdfe344
+B 14452 25 ShakerSpline 0 27 adefb013
+B 14463 24 Spline 4 9 fa9969ed
+B 14471 24 Spline 5 9 138f6ced
+B 14479 24 Spline 6 9 47604b60
+B 14487 24 Spline 5 9 d6391773
+B 14495 24 Spline 5 9 de52609a
+B 14503 24 Spline 7 9 3e371635
+B 14523 24 Spline 2 9 ca7882a0
+B 14524 25 ShakerSpline 0 27 db35b2
+B 14636 24 Spline 8 9 e3a47a64
+B 14652 24 Spline 6 9 1ac938a9
+B 14667 24 Spline 8 9 b5c384b7
+B 14682 24 Spline 8 9 da3682fc
+B 14697 24 Spline 11 9 647b8528
+B 14714 24 Spline 5 9 a227de3d
+B 14715 25 ShakerSpline 0 27 9d0cedc7
+B 14723 24 Spline 22 9 fb1f23cf
+B 14734 24 Spline 19 9 d5fe09cb
+B 14752 24 Spline 5 9 3ed5c385
+B 14753 25 ShakerSpline 0 27 7d54a01c
+B 14768 24 Spline 7 9 7351f73d
+B 14830 28 Spline 7 9 778ebe93
+B 14840 24 Spline 5 9 3562151e
+B 14841 25 ShakerSpline 0 27 7d7df7e7
+B 14842 25 ShakerSpline 0 27 884604a5
+B 14896 24 Spline 6 9 ba0e0eae
+B 14908 24 Spline 7 9 8f3a387d
+B 14915 24 Spline 6 9 e42e19a9
+B 14922 24 Spline 7 9 6868cd7c
+B 14929 24 Spline 5 9 7b9fb192
+B 14936 24 Spline 5 9 efa7599a
+B 14947 24 Spline 6 9 f6bab982
+B 14948 25 ShakerSpline 0 27 6bd69e0e
+B 14949 25 ShakerSpline 0 27 62691172
+B 14957 24 Spline 4 9 597780ea
+B 14963 24 Spline 4 9 a9f0a6a5
+B 14969 24 Spline 4 9 6dabab69
+B 14979 24 Spline 4 9 129f7225
+B 14980 25 ShakerSpline 0 27 a65dde37
+B 14981 25 ShakerSpline 0 27 58befacb
+B 14997 24 Spline 3 9 b4ddd15d
+B 15007 24 Spline 2 9 d85bd23d
+B 15051 24 Spline 4 9 42132ed0
+B 15052 25 ShakerSpline 0 27 fb740dc7
+B 15077 24 Spline 7 9 a65a502b
+B 15078 25 ShakerSpline 0 27 b4f7d147
+B 15092 24 Spline 5 9 b2ffc741
+B 15100 24 Spline 6 9 984894b5
+B 15108 24 Spline 3 9 6bc1bfa3
+B 15130 24 Spline 3 9 c3928626
+B 15131 25 ShakerSpline 0 27 b0b91ce2
+B 15143 24 Spline 7 9 1239802e
+B 15151 24 Spline 2 9 e83575b
+B 15152 25 ShakerSpline 0 27 aa10fa34
+B 15153 25 ShakerSpline 0 27 f17a5286
+B 15206 24 Spline 3 9 2aa76e77
+B 15212 24 Spline 4 9 fcb215b
+B 15218 24 Spline 2 9 74c41e6a
+B 15219 25 ShakerSpline 0 27 9aeda954
+B 15233 24 Spline 10 9 87a2e0de
+B 15240 28 Spline 10 9 5f10bf82
+B 15278 24 Spline 9 9 827307a3
+B 15291 24 Spline 6 9 33420710
+B 15314 24 Spline 7 9 68eed9d0
+B 15344 24 Spline 2 9 b4565bdd
+B 15345 25 ShakerSpline 0 27 e78d50c3
+B 15378 24 Spline 2 9 f642edde
+B 15399 24 Spline 8 9 522fe0da
+B 15411 24 Spline 6 9 8ae243e7
+B 15412 25 ShakerSpline 0 27 757c7ec7
+B 15509 24 Spline 2 9 b3bcf814
+B 15510 25 ShakerSpline 0 27 2d7cd704
+B 15540 24 Spline 3 9 18ffb61
+B 15569 24 Spline 2 9 e42b79b9
+B 15587 24 Spline 2 9 78e75615
+B 15588 25 ShakerSpline 0 27 ec6366ee
+B 15597 24 Spline 4 9 74adb4eb
+B 15649 24 Spline 7 9 2c82cfa2
+B 15650 25 ShakerSpline 0 27 3d95f7c4
+B 15651 25 ShakerSpline 0 27 7ff585ef
+B 15677 24 Spline 9 9 7bc2426b
+B 15752 24 Spline 2 9 ecdd5718
+B 15753 25 ShakerSpline 0 27 19f19e10
+B 15759 26 Spline 20 9 e0484e76
+B 15783 26 Spline 46 9 1a214d11
+B 15788 26 Spline 42 9 506d00f2
+B 15794 26 Spline 8 9 fc40a0c9
+B 15800 26 Spline 26 9 f5361bda
+B 15806 26 Spline 10 9 26655617
+B 15832 26 Spline 10 9 4fee7670
+B 15838 26 Spline 6 9 d5755c91
+B 15844 26 Spline 6 9 98845666
+B 15850 26 Spline 6 9 5db5222c
+B 15856 26 Spline 6 9 942c02e1
+B 15862 26 Spline 6 9 5241f8d1
+B 15868 26 Spline 6 9 12eb32c7
+B 15874 26 Spline 6 9 a4cfa5e6
+B 15880 26 Spline 6 9 b28ba566
+B 15886 26 Spline 4 9 6b97b17d
+B 15893 26 Spline 10 9 79a14894
+B 15909 26 Spline 6 9 aa2d05cf
+B 15916 26 Spline 30 9 ca451df9
+B 15924 26 Spline 6 9 10966509
+B 15930 26 Spline 6 9 5ebd689b
+B 15936 26 Spline 8 9 dfc4c1f6
+B 15942 26 Spline 10 9 96133fd
+B 15948 26 Spline 8 9 4bf8c498
+B 15956 26 Spline 10 9 84fc033c
+B 15962 26 Spline 10 9 55c482f8
+B 15970 26 Spline 16 9 358e7a98
+B 15976 26 Spline 16 9 a14a4275
+B 15982 26 Spline 20 9 50ad033e
+B 15990 26 Spline 8 9 7c6fe481
+B 15996 26 Spline 10 9 e1d44a5
+B 16037 24 Spline 7 9 59dd73ec
+B 16038 25 ShakerSpline 0 27 7f432df9
+B 16050 24 Spline 3 9 460cf7e7
+B 16051 25 ShakerSpline 0 27 f8412860
+B 16052 25 ShakerSpline 0 27 4c61456
+B 16060 24 Spline 4 9 dae5a289
+B 16068 24 Spline 2 9 850ecf52
+B 16076 24 Spline 5 9 39c4c398
+B 16077 25 ShakerSpline 0 27 1a9546f7
+B 16085 24 Spline 2 9 51f7d81
+B 16095 24 Spline 4 9 978afb56
+B 16096 25 ShakerSpline 0 27 ba61d579
+B 16106 24 Spline 2 9 41d59b84
+B 16107 25 ShakerSpline 0 27 136dff47
+B 16182 24 Spline 2 9 54f904bb
+B 16273 24 Spline 4 9 339a464e
+B 16274 25 ShakerSpline 0 27 ed5f3980
+B 16275 25 ShakerSpline 0 27 8a1a74a1
+B 16302 24 Spline 4 9 f3941d68
+B 16303 25 ShakerSpline 0 27 d2495efe
+B 16304 25 ShakerSpline 0 27 26f3a5df
+B 16340 24 Spline 2 9 cd614b8e
+B 16375 24 Spline 2 9 a8ab6948

@@ -1,0 +1,18 @@
+# Streams node's reference results into the C checker.
+#   -DNODE=<node> -DSCRIPT=<dump_math_sweep.mjs> -DCHECKER=<exe> -DWORK=<dir> [-DCOUNT=n]
+if(NOT COUNT)
+  set(COUNT 150000)
+endif()
+file(MAKE_DIRECTORY "${WORK}")
+foreach(fn sin cos atan log2 log acos exp2 pow)
+  set(sweep "${WORK}/sweep_${fn}.txt")
+  execute_process(COMMAND "${NODE}" "${SCRIPT}" ${fn} ${COUNT} 7 OUTPUT_FILE "${sweep}" RESULT_VARIABLE rc)
+  if(NOT rc EQUAL 0)
+    message(FATAL_ERROR "node failed for ${fn}")
+  endif()
+  execute_process(COMMAND "${CHECKER}" INPUT_FILE "${sweep}" RESULT_VARIABLE rc OUTPUT_VARIABLE out)
+  message(STATUS "${fn}: ${out}")
+  if(NOT rc EQUAL 0)
+    message(FATAL_ERROR "${fn} differs from V8")
+  endif()
+endforeach()

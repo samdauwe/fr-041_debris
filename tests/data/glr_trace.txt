@@ -1,0 +1,467 @@
+S material_vertex 8952 8c76fa16
+S material_fragment 18247 4c185751
+S shadow_vertex 515 e1ccd110
+S shadow_fragment 95 7759c5ae
+S fullscreen_vertex 205 63b6df94
+S fullscreen_fragment 3198 db86cc9c
+V material_vertex 44
+V shadow_vertex 0
+V fullscreen_vertex 2
+U material 54
+U shadow 3
+U fullscreen 9
+T createShader 35633
+T shaderSource #1 s:8952:8c76fa16
+T compileShader #1
+T createShader 35632
+T shaderSource #2 s:18247:4c185751
+T compileShader #2
+T createProgram
+T attachShader #3 #1
+T attachShader #3 #2
+T linkProgram #3
+T deleteShader #1
+T deleteShader #2
+T getUniformLocation #3 "uViewProjection"
+T getUniformLocation #3 "uUVTransform"
+T getUniformLocation #3 "uTexture0"
+T getUniformLocation #3 "uTexture1"
+T getUniformLocation #3 "uTexture2"
+T getUniformLocation #3 "uTexture3"
+T getUniformLocation #3 "uPrelightTexture"
+T getUniformLocation #3 "uM11NormalizerCube"
+T getUniformLocation #3 "uM11AttenuationVolume"
+T getUniformLocation #3 "uTextureMask"
+T getUniformLocation #3 "uMode"
+T getUniformLocation #3 "uVertexColorMode"
+T getUniformLocation #3 "uUsePrelight"
+T getUniformLocation #3 "uMaterial20"
+T getUniformLocation #3 "uM20Flags"
+T getUniformLocation #3 "uM20EnvironmentFlags"
+T getUniformLocation #3 "uM20RuntimeEnvironmentFlags"
+T getUniformLocation #3 "uM20SamplerFlags"
+T getUniformLocation #3 "uM20SamplerScales"
+T getUniformLocation #3 "uM20UVTransform1[0]"
+T getUniformLocation #3 "uM20UVTransform2[0]"
+T getUniformLocation #3 "uMaterial11"
+T getUniformLocation #3 "uM11MultipassLight"
+T getUniformLocation #3 "uM11View"
+T getUniformLocation #3 "uM11WorldToModel"
+T getUniformLocation #3 "uM11ModelToWorld"
+T getUniformLocation #3 "uM11SpecialFlags"
+T getUniformLocation #3 "uLegacyLightingMode"
+T getUniformLocation #3 "uConditionLegacyBasis"
+T getUniformLocation #3 "uM11SamplerFlags"
+T getUniformLocation #3 "uM11SamplerScales"
+T getUniformLocation #3 "uM11UVTransform1[0]"
+T getUniformLocation #3 "uM11UVTransform2[0]"
+T getUniformLocation #3 "uDetailOps"
+T getUniformLocation #3 "uCombiners[0]"
+T getUniformLocation #3 "uAlphaCombiner"
+T getUniformLocation #3 "uMaterialColors[0]"
+T getUniformLocation #3 "uBaseColor"
+T getUniformLocation #3 "uAmbient"
+T getUniformLocation #3 "uCameraPosition"
+T getUniformLocation #3 "uMaterialCameraPosition"
+T getUniformLocation #3 "uFogColor"
+T getUniformLocation #3 "uFogRange"
+T getUniformLocation #3 "uFogEnabled"
+T getUniformLocation #3 "uAlphaCutoff"
+T getUniformLocation #3 "uSpecularPower"
+T getUniformLocation #3 "uSpecularColor"
+T getUniformLocation #3 "uSpecularStrength"
+T getUniformLocation #3 "uLightCount"
+T getUniformLocation #3 "uLightPosition[0]"
+T getUniformLocation #3 "uLightAttenuation[0]"
+T getUniformLocation #3 "uLightColor[0]"
+T getUniformLocation #3 "uLightSpecular[0]"
+T getUniformLocation #3 "uM11LightConstant"
+T createShader 35633
+T shaderSource #4 s:515:e1ccd110
+T compileShader #4
+T createShader 35632
+T shaderSource #5 s:95:7759c5ae
+T compileShader #5
+T createProgram
+T attachShader #6 #4
+T attachShader #6 #5
+T linkProgram #6
+T deleteShader #4
+T deleteShader #5
+T getUniformLocation #6 "uViewProjection"
+T getUniformLocation #6 "uModel"
+T getUniformLocation #6 "uLightPosition"
+T createVertexArray
+T createBuffer
+T createBuffer
+T createBuffer
+T createShader 35633
+T shaderSource #11 s:205:63b6df94
+T compileShader #11
+T createShader 35632
+T shaderSource #12 s:3198:db86cc9c
+T compileShader #12
+T createProgram
+T attachShader #13 #11
+T attachShader #13 #12
+T linkProgram #13
+T deleteShader #11
+T deleteShader #12
+T getUniformLocation #13 "uImage"
+T getUniformLocation #13 "uMaterialTexture"
+T getUniformLocation #13 "uMode"
+T getUniformLocation #13 "uColor0"
+T getUniformLocation #13 "uColor1"
+T getUniformLocation #13 "uParameters"
+T getUniformLocation #13 "uColorCorrect[0]"
+T getUniformLocation #13 "uTexel"
+T getUniformLocation #13 "uUVRect"
+T createVertexArray
+T createBuffer
+T createTexture
+T createTexture
+T pixelStorei 3317 1
+T bindTexture 34067 #16
+T texImage2D 34069 0 32856 64 64 0 6408 5121 d:16384:8abd2b05
+T texImage2D 34070 0 32856 64 64 0 6408 5121 d:16384:a48c49f5
+T texImage2D 34071 0 32856 64 64 0 6408 5121 d:16384:ed11d631
+T texImage2D 34072 0 32856 64 64 0 6408 5121 d:16384:97aab909
+T texImage2D 34073 0 32856 64 64 0 6408 5121 d:16384:97cf55bd
+T texImage2D 34074 0 32856 64 64 0 6408 5121 d:16384:37b9878d
+T texParameteri 34067 10241 9729
+T texParameteri 34067 10240 9729
+T texParameteri 34067 10242 10497
+T texParameteri 34067 10243 10497
+T texParameteri 34067 33084 0
+T texParameteri 34067 33085 0
+T bindTexture 32879 #17
+T texImage3D 32879 0 32856 32 32 32 0 6408 5121 d:131072:20208279
+T texParameteri 32879 10241 9729
+T texParameteri 32879 10240 9729
+T texParameteri 32879 10242 33071
+T texParameteri 32879 10243 33071
+T texParameteri 32879 32882 33071
+T texParameteri 32879 33084 0
+T texParameteri 32879 33085 0
+T useProgram #3
+T activeTexture 33989
+T bindTexture 34067 #16
+T activeTexture 33990
+T bindTexture 32879 #17
+T uniform1i @uM11NormalizerCube 5
+T uniform1i @uM11AttenuationVolume 6
+T createFramebuffer
+T createTexture
+T createRenderbuffer
+T bindTexture 3553 #19
+T texImage2D 3553 0 32856 1 1 0 6408 5121 null
+T texParameteri 3553 10241 9729
+T texParameteri 3553 10240 9729
+T texParameteri 3553 10242 33071
+T texParameteri 3553 10243 33071
+T bindFramebuffer 36160 #18
+T framebufferTexture2D 36160 36064 3553 #19 0
+T bindRenderbuffer 36161 #20
+T renderbufferStorage 36161 35056 1 1
+T framebufferRenderbuffer 36160 33306 36161 #20
+T bindFramebuffer 36160 null
+T createFramebuffer
+T createTexture
+T bindTexture 3553 #22
+T texImage2D 3553 0 32856 1 1 0 6408 5121 null
+T texParameteri 3553 10241 9729
+T texParameteri 3553 10240 9729
+T texParameteri 3553 10242 33071
+T texParameteri 3553 10243 33071
+T bindFramebuffer 36160 #21
+T framebufferTexture2D 36160 36064 3553 #22 0
+T bindFramebuffer 36160 null
+T bindTexture 3553 #19
+T texImage2D 3553 0 32856 1280 640 0 6408 5121 null
+T texParameteri 3553 10241 9729
+T texParameteri 3553 10240 9729
+T texParameteri 3553 10242 33071
+T texParameteri 3553 10243 33071
+T bindFramebuffer 36160 #18
+T framebufferTexture2D 36160 36064 3553 #19 0
+T bindRenderbuffer 36161 #20
+T renderbufferStorage 36161 35056 1280 640
+T framebufferRenderbuffer 36160 33306 36161 #20
+T bindFramebuffer 36160 null
+T bindTexture 3553 #22
+T texImage2D 3553 0 32856 1280 640 0 6408 5121 null
+T texParameteri 3553 10241 9729
+T texParameteri 3553 10240 9729
+T texParameteri 3553 10242 33071
+T texParameteri 3553 10243 33071
+T bindFramebuffer 36160 #21
+T framebufferTexture2D 36160 36064 3553 #22 0
+T bindFramebuffer 36160 null
+T bindFramebuffer 36160 #18
+T viewport 0 0 1280 640
+T disable 3089
+T colorMask 1 1 1 1
+T depthMask 1
+T stencilMask 255
+T clearColor f00000000 f00000000 f00000000 f3f800000
+T clearDepth f3f800000
+T clearStencil 0
+T clear 17664
+T bindFramebuffer 36160 null
+T disable 3089
+T viewport 0 0 1280 720
+T colorMask 1 1 1 1
+T clearColor f00000000 f00000000 f00000000 f3f800000
+T clear 16384
+T disable 2929
+T depthMask 0
+T disable 2884
+T disable 32823
+T disable 2960
+T disable 3042
+T colorMask 1 1 1 1
+T viewport 0 40 1280 640
+T useProgram #13
+T bindVertexArray #14
+T activeTexture 33984
+T bindTexture 3553 #19
+T uniform1i @uImage 0
+T activeTexture 33985
+T createTexture
+T bindTexture 3553 #23
+T texImage2D 3553 0 32856 1 1 0 6408 5121 d:4:e3160fb1
+T texParameteri 3553 10241 9729
+T texParameteri 3553 10240 9729
+T bindTexture 3553 #23
+T uniform1i @uMaterialTexture 1
+T uniform1i @uMode 0
+T uniform4fv @uColor0 d:16:8a97f865
+T uniform4fv @uColor1 d:16:8a97f865
+T uniform4fv @uParameters d:16:69691905
+T uniform4fv @uColorCorrect[0] d:112:bf2f8c85
+T uniform2f @uTexel f3a4ccccd f3acccccd
+T uniform4fv @uUVRect d:16:33438a35
+T drawArrays 4 0 3
+T bindFramebuffer 36160 #18
+T viewport 0 0 1280 640
+T disable 3089
+T colorMask 1 1 1 1
+T depthMask 1
+T stencilMask 255
+T clearColor f00000000 f00000000 f00000000 f3f800000
+T clearDepth f3f800000
+T clearStencil 0
+T clear 17664
+T bindFramebuffer 36160 null
+T disable 3089
+T viewport 0 0 1280 720
+T colorMask 1 1 1 1
+T clearColor f00000000 f00000000 f00000000 f3f800000
+T clear 16384
+T disable 2929
+T depthMask 0
+T disable 2884
+T disable 32823
+T disable 2960
+T disable 3042
+T colorMask 1 1 1 1
+T viewport 0 40 1280 640
+T useProgram #13
+T bindVertexArray #14
+T activeTexture 33984
+T bindTexture 3553 #19
+T uniform1i @uImage 0
+T activeTexture 33985
+T bindTexture 3553 #23
+T uniform1i @uMaterialTexture 1
+T uniform1i @uMode 0
+T uniform4fv @uColor0 d:16:8a97f865
+T uniform4fv @uColor1 d:16:8a97f865
+T uniform4fv @uParameters d:16:69691905
+T uniform4fv @uColorCorrect[0] d:112:bf2f8c85
+T uniform2f @uTexel f3a4ccccd f3acccccd
+T uniform4fv @uUVRect d:16:33438a35
+T drawArrays 4 0 3
+T bindTexture 3553 #19
+T texImage2D 3553 0 32856 800 400 0 6408 5121 null
+T texParameteri 3553 10241 9729
+T texParameteri 3553 10240 9729
+T texParameteri 3553 10242 33071
+T texParameteri 3553 10243 33071
+T bindFramebuffer 36160 #18
+T framebufferTexture2D 36160 36064 3553 #19 0
+T bindRenderbuffer 36161 #20
+T renderbufferStorage 36161 35056 800 400
+T framebufferRenderbuffer 36160 33306 36161 #20
+T bindFramebuffer 36160 null
+T bindTexture 3553 #22
+T texImage2D 3553 0 32856 800 400 0 6408 5121 null
+T texParameteri 3553 10241 9729
+T texParameteri 3553 10240 9729
+T texParameteri 3553 10242 33071
+T texParameteri 3553 10243 33071
+T bindFramebuffer 36160 #21
+T framebufferTexture2D 36160 36064 3553 #22 0
+T bindFramebuffer 36160 null
+T bindFramebuffer 36160 #18
+T viewport 0 0 800 400
+T disable 3089
+T colorMask 1 1 1 1
+T depthMask 1
+T stencilMask 255
+T clearColor f00000000 f00000000 f00000000 f3f800000
+T clearDepth f3f800000
+T clearStencil 0
+T clear 17664
+T bindFramebuffer 36160 null
+T disable 3089
+T viewport 0 0 800 600
+T colorMask 1 1 1 1
+T clearColor f00000000 f00000000 f00000000 f3f800000
+T clear 16384
+T disable 2929
+T depthMask 0
+T disable 2884
+T disable 32823
+T disable 2960
+T disable 3042
+T colorMask 1 1 1 1
+T viewport 0 100 800 400
+T useProgram #13
+T bindVertexArray #14
+T activeTexture 33984
+T bindTexture 3553 #19
+T uniform1i @uImage 0
+T activeTexture 33985
+T bindTexture 3553 #23
+T uniform1i @uMaterialTexture 1
+T uniform1i @uMode 0
+T uniform4fv @uColor0 d:16:8a97f865
+T uniform4fv @uColor1 d:16:8a97f865
+T uniform4fv @uParameters d:16:69691905
+T uniform4fv @uColorCorrect[0] d:112:bf2f8c85
+T uniform2f @uTexel f3aa3d70a f3b23d70a
+T uniform4fv @uUVRect d:16:33438a35
+T drawArrays 4 0 3
+T bindTexture 3553 #19
+T texImage2D 3553 0 32856 640 360 0 6408 5121 null
+T texParameteri 3553 10241 9729
+T texParameteri 3553 10240 9729
+T texParameteri 3553 10242 33071
+T texParameteri 3553 10243 33071
+T bindFramebuffer 36160 #18
+T framebufferTexture2D 36160 36064 3553 #19 0
+T bindRenderbuffer 36161 #20
+T renderbufferStorage 36161 35056 640 360
+T framebufferRenderbuffer 36160 33306 36161 #20
+T bindFramebuffer 36160 null
+T bindTexture 3553 #22
+T texImage2D 3553 0 32856 640 360 0 6408 5121 null
+T texParameteri 3553 10241 9729
+T texParameteri 3553 10240 9729
+T texParameteri 3553 10242 33071
+T texParameteri 3553 10243 33071
+T bindFramebuffer 36160 #21
+T framebufferTexture2D 36160 36064 3553 #22 0
+T bindFramebuffer 36160 null
+T bindFramebuffer 36160 #18
+T viewport 0 0 640 360
+T disable 3089
+T colorMask 1 1 1 1
+T depthMask 1
+T stencilMask 255
+T clearColor f00000000 f00000000 f00000000 f3f800000
+T clearDepth f3f800000
+T clearStencil 0
+T clear 17664
+T bindFramebuffer 36160 null
+T disable 3089
+T viewport 0 0 640 360
+T colorMask 1 1 1 1
+T clearColor f00000000 f00000000 f00000000 f3f800000
+T clear 16384
+T disable 2929
+T depthMask 0
+T disable 2884
+T disable 32823
+T disable 2960
+T disable 3042
+T colorMask 1 1 1 1
+T viewport 0 0 640 360
+T useProgram #13
+T bindVertexArray #14
+T activeTexture 33984
+T bindTexture 3553 #19
+T uniform1i @uImage 0
+T activeTexture 33985
+T bindTexture 3553 #23
+T uniform1i @uMaterialTexture 1
+T uniform1i @uMode 0
+T uniform4fv @uColor0 d:16:8a97f865
+T uniform4fv @uColor1 d:16:8a97f865
+T uniform4fv @uParameters d:16:69691905
+T uniform4fv @uColorCorrect[0] d:112:bf2f8c85
+T uniform2f @uTexel f3acccccd f3b360b61
+T uniform4fv @uUVRect d:16:33438a35
+T drawArrays 4 0 3
+T bindTexture 3553 #19
+T texImage2D 3553 0 32856 1920 960 0 6408 5121 null
+T texParameteri 3553 10241 9729
+T texParameteri 3553 10240 9729
+T texParameteri 3553 10242 33071
+T texParameteri 3553 10243 33071
+T bindFramebuffer 36160 #18
+T framebufferTexture2D 36160 36064 3553 #19 0
+T bindRenderbuffer 36161 #20
+T renderbufferStorage 36161 35056 1920 960
+T framebufferRenderbuffer 36160 33306 36161 #20
+T bindFramebuffer 36160 null
+T bindTexture 3553 #22
+T texImage2D 3553 0 32856 1920 960 0 6408 5121 null
+T texParameteri 3553 10241 9729
+T texParameteri 3553 10240 9729
+T texParameteri 3553 10242 33071
+T texParameteri 3553 10243 33071
+T bindFramebuffer 36160 #21
+T framebufferTexture2D 36160 36064 3553 #22 0
+T bindFramebuffer 36160 null
+T bindFramebuffer 36160 #18
+T viewport 0 0 1920 960
+T disable 3089
+T colorMask 1 1 1 1
+T depthMask 1
+T stencilMask 255
+T clearColor f00000000 f00000000 f00000000 f3f800000
+T clearDepth f3f800000
+T clearStencil 0
+T clear 17664
+T bindFramebuffer 36160 null
+T disable 3089
+T viewport 0 0 1921 1081
+T colorMask 1 1 1 1
+T clearColor f00000000 f00000000 f00000000 f3f800000
+T clear 16384
+T disable 2929
+T depthMask 0
+T disable 2884
+T disable 32823
+T disable 2960
+T disable 3042
+T colorMask 1 1 1 1
+T viewport 0 60 1920 960
+T useProgram #13
+T bindVertexArray #14
+T activeTexture 33984
+T bindTexture 3553 #19
+T uniform1i @uImage 0
+T activeTexture 33985
+T bindTexture 3553 #23
+T uniform1i @uMaterialTexture 1
+T uniform1i @uMode 0
+T uniform4fv @uColor0 d:16:8a97f865
+T uniform4fv @uColor1 d:16:8a97f865
+T uniform4fv @uParameters d:16:69691905
+T uniform4fv @uColorCorrect[0] d:112:bf2f8c85
+T uniform2f @uTexel f3a088889 f3a888889
+T uniform4fv @uUVRect d:16:33438a35
+T drawArrays 4 0 3

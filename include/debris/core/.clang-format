@@ -1,0 +1,4 @@
+---
+# The libraries of this directory are transcriptions of the original sources and keep the layout of their reference, so that
+# differences stay visible line by line (the numeric kernels are laid out for reading the arithmetic, not for a formatter).
+DisableFormat: true

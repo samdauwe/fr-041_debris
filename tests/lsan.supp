@@ -1,0 +1,5 @@
+# One-time allocations inside the Mesa/EGL driver that SDL loads; they are not freed by design (not ours).
+leak:SDL_EGL_InitializeOffscreen
+leak:SDL_EGL_LoadLibrary
+leak:SDL_GL_CreateContext
+leak:SDL_GL_LoadLibrary

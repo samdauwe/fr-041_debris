@@ -1,0 +1,20 @@
+# libFuzzer harnesses (Clang only). Each is also a CTest test that replays its seed once, so the harnesses stay buildable and
+# the seeds stay crash-free. Run one for real with, for example:
+#   ./fuzz_kx -max_len=600000 -timeout=20 corpus/ ../assets/debris_party.kx
+if(NOT CMAKE_C_COMPILER_ID MATCHES "Clang")
+  message(STATUS "debris: the fuzzers need Clang (libFuzzer); skipped")
+  return()
+endif()
+set(_fuzz_flags -fsanitize=fuzzer,address,undefined -fno-sanitize-recover=undefined -fno-omit-frame-pointer -O1 -g)
+foreach(_entry IN ITEMS "kx|debris_party.kx" "v2m|debris_loader.v2m")
+  string(REPLACE "|" ";" _parts ${_entry})
+  list(GET _parts 0 _name)
+  list(GET _parts 1 _seed)
+  add_executable(fuzz_${_name} tests/fuzz/fuzz_${_name}.c)
+  target_link_libraries(fuzz_${_name} PRIVATE debris::headers)
+  target_compile_options(fuzz_${_name} PRIVATE ${_fuzz_flags})
+  target_link_options(fuzz_${_name} PRIVATE ${_fuzz_flags})
+  set_target_properties(fuzz_${_name} PROPERTIES FOLDER tests/fuzz)
+  add_test(NAME fuzz_${_name}_seeds COMMAND fuzz_${_name} -runs=0 ${PROJECT_SOURCE_DIR}/assets/${_seed})
+  set_tests_properties(fuzz_${_name}_seeds PROPERTIES LABELS fuzz TIMEOUT 300)
+endforeach()

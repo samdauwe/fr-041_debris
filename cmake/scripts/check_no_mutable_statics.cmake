@@ -1,0 +1,20 @@
+# Fails if a header declares mutable static state (the libraries are reentrant: no mutable globals).
+# A mutable static is a `static` declaration without `const` and without a parameter list.
+#   -DHEADERS=a.h|b.h
+string(REPLACE "|" ";" HEADERS "${HEADERS}")
+set(bad "")
+foreach(header IN LISTS HEADERS)
+  file(STRINGS "${header}" lines)
+  set(n 0)
+  foreach(line IN LISTS lines)
+    math(EXPR n "${n} + 1")
+    if(line MATCHES "^[ \t]*static[ \t]" AND NOT line MATCHES "const" AND NOT line MATCHES "\\(" AND NOT line MATCHES "^[ \t]*static[ \t]+inline")
+      list(APPEND bad "${header}:${n}: ${line}")
+    endif()
+  endforeach()
+endforeach()
+if(bad)
+  string(REPLACE ";" "\n" report "${bad}")
+  message(FATAL_ERROR "mutable static state found:\n${report}")
+endif()
+message(STATUS "no mutable statics")

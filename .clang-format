@@ -1,0 +1,40 @@
+---
+# C99 style of the project: 2 spaces, K&R braces except for function bodies, compact one-line helpers allowed.
+Language: Cpp
+BasedOnStyle: LLVM
+IndentWidth: 2
+ContinuationIndentWidth: 2
+UseTab: Never
+ColumnLimit: 160
+PointerAlignment: Right
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterFunction: true
+  AfterControlStatement: Never
+  AfterStruct: false
+  AfterEnum: false
+  AfterUnion: false
+  BeforeElse: false
+IndentCaseLabels: false
+IndentPPDirectives: None
+AllowShortFunctionsOnASingleLine: All
+AllowShortIfStatementsOnASingleLine: WithoutElse
+AllowShortLoopsOnASingleLine: true
+AllowShortBlocksOnASingleLine: Always
+AllowShortCaseLabelsOnASingleLine: true
+AlignAfterOpenBracket: Align
+AlignTrailingComments:
+  Kind: Always
+  OverEmptyLines: 1
+SpacesBeforeTrailingComments: 2
+SortIncludes: Never        # the *_IMPLEMENTATION defines make the order of includes significant
+ReflowComments: false      # the comments are written for the reader, not for the formatter
+MaxEmptyLinesToKeep: 2
+AlignEscapedNewlines: Left
+SpaceAfterCStyleCast: false
+SpacesInContainerLiterals: true
+Cpp11BracedListStyle: false
+AlignConsecutiveMacros: Consecutive
+AlignConsecutiveDeclarations: false
+BinPackArguments: true
+BinPackParameters: true
