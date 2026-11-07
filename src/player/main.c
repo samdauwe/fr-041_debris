@@ -671,6 +671,11 @@ static int create_window(app *a)
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, contexts[i].major);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, contexts[i].minor);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 0);
+#if defined(__EMSCRIPTEN__)
+    /* The picture's alpha is whatever the passes left in it. A canvas with alpha is composited with the page (Chrome shows the pixels
+       with alpha below their colour black), one without ignores it as the native window does. */
+    SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 0);
+#endif
     a->window = SDL_CreateWindow("fr-041: debris", a->opt.width, a->opt.height, flags);
     if (!a->window) return fail("window", SDL_GetError());
     a->gl = SDL_GL_CreateContext(a->window);
