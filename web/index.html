@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="fr-041: debris., the 177 kB demo by Farbrausch (Breakpoint 2007), generated and played in the browser.">
+<title>fr-041: debris.</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #000; color: #e8e8e8; font: 16px/1.5 system-ui, sans-serif; }
+  main { min-height: 100%; display: grid; place-content: center; justify-items: center; gap: 1rem; padding: 1.5rem; text-align: center; box-sizing: border-box; }
+  h1 { margin: 0; font-size: 2rem; font-weight: 600; letter-spacing: .02em; }
+  p { margin: 0; max-width: 34rem; color: #aaa; }
+  .row { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; justify-content: center; }
+  select, button { font: inherit; color: inherit; background: #1c1c1c; border: 1px solid #444; border-radius: .4rem; padding: .5rem .9rem; }
+  button { background: #c8431d; border-color: #c8431d; color: #fff; font-weight: 600; cursor: pointer; }
+  button:disabled { opacity: .5; cursor: default; }
+  :focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+  #status { min-height: 1.5em; color: #ddd; }
+  #status.error { color: #ff8a70; }
+  small { color: #777; }
+  a { color: #9bc; }
+  #canvas { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; background: #000; outline: none; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main id="start">
+  <h1>fr-041: debris.</h1>
+  <p>The 177&nbsp;kB demo by Farbrausch (Breakpoint 2007). Its textures, meshes and music are generated here, in your browser, when you start it.</p>
+  <div class="row">
+    <label>Texture quality
+      <select id="quality">
+        <option value="low">Low (fastest, least memory)</option>
+        <option value="normal" selected>Normal</option>
+        <option value="high">High (as authored)</option>
+      </select>
+    </label>
+    <button id="go" type="button">Start</button>
+  </div>
+  <p id="status" role="status"></p>
+  <small>Space pause &middot; &larr; / &rarr; seek 10&nbsp;s &middot; F fullscreen &middot; C credits &middot; F10 statistics</small>
+  <small>Native player and source: <a href="https://github.com/samdauwe/fr-041_debris">github.com/samdauwe/fr-041_debris</a></small>
+  <noscript><p>This page needs JavaScript and WebGL 2.</p></noscript>
+</main>
+<canvas id="canvas" hidden tabindex="-1" oncontextmenu="event.preventDefault()"></canvas>
+<script>
+"use strict";
+const $ = (id) => document.getElementById(id);
+const say = (text, error) => { $("status").textContent = text; $("status").className = error ? "error" : ""; };
+
+const hasWebGL2 = () => {
+  try {
+    const gl = document.createElement("canvas").getContext("webgl2");
+    if (gl) gl.getExtension("WEBGL_lose_context")?.loseContext();
+    return !!gl;
+  } catch (e) {
+    return false;
+  }
+};
+
+const requested = new URLSearchParams(location.search).get("quality");
+if ([...$("quality").options].some((o) => o.value === requested)) $("quality").value = requested;
+
+if (!hasWebGL2()) {
+  $("go").disabled = true;
+  say("This browser does not offer WebGL 2. Try a current Chrome, Edge, Firefox or Safari.", true);
+}
+
+const loadScript = (src) => new Promise((resolve, reject) => {
+  const s = document.createElement("script");
+  s.src = src;
+  s.onload = resolve;
+  s.onerror = () => reject(new Error(src + " did not load"));
+  document.head.append(s);
+});
+
+const finish = (text, error) => {
+  $("canvas").hidden = true;
+  $("start").hidden = false;
+  $("go").disabled = false;
+  $("go").textContent = "Play again";
+  $("go").onclick = () => { location.search = "?quality=" + $("quality").value; };
+  say(text, error);
+};
+
+$("go").onclick = async () => {
+  $("go").disabled = true;
+  $("quality").disabled = true;
+  say("Loading\u2026");
+  try {
+    await loadScript("index.js");
+    $("start").hidden = true;
+    $("canvas").hidden = false;
+    await createDebris({
+      canvas: $("canvas"),
+      arguments: ["--texture-quality", $("quality").value],
+      print: (text) => console.log(text),
+      printErr: (text) => {
+        console.error(text);
+        if (text.startsWith("debris:")) say(text, true);
+      },
+      onAbort: () => finish("The demo stopped unexpectedly. Reloading with a lower texture quality may help.", true),
+      onEnded: (code) => finish(code ? "The demo stopped, see the console." : "That was it.", code !== 0),
+    });
+  } catch (e) {
+    console.error(e);
+    finish(String(e.message || e), true);
+  }
+};
+</script>
+</body>
+</html>

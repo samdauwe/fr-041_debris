@@ -110,6 +110,9 @@ static const cli_case k_cases[] = {
   { "soak_short", "--soak 1 --soak-limit 25 --size 320x180 --texture-quality -2", 0, 1, k_soak, NULL },
   /* quitting while the runtime is still loading cancels the worker at its next operator */
   { "cancel_loading", "--self-check --no-audio --no-vsync --exit-after 0.05", 0, 1, k_cancelled, NULL },
+  /* the web's loader: time slices on the main thread; cancelling, finishing and playing work the same as with the worker */
+  { "cancel_loading_single", "--single-thread --self-check --no-audio --no-vsync --exit-after 0.05", 0, 1, k_cancelled, NULL },
+  { "live_single_thread", "--single-thread --self-check --no-audio --no-vsync --play-for 3 --script 1:space,2:space --expect-position 2", 0, 1, NULL, NULL, 1 },
   /* audio clock, pause (rewinds the audio), forward and backward seek through the real SDL audio pipeline; the script times
      count from the party start, so the load time does not matter */
   { "live_session", "--self-check --no-vsync --play-for 7 --script 1.5:space,2.5:space,3:right,4:left --expect-position 5.6", 0, 1, NULL, NULL, 1 },

@@ -113,7 +113,10 @@ int suite_player_args(int argc, char **argv)
           o.script[3].key == PKEY_STATS,
         "window script keys");
   accepted("", &o);
-  CHECK(!o.stats && !o.gl_check && o.soak_loops == 0 && o.soak_limit < 0 && !o.licences, "defaults of the window, statistics and soak options");
+  CHECK(!o.stats && !o.gl_check && o.soak_loops == 0 && o.soak_limit < 0 && !o.licences && !o.single_thread,
+        "defaults of the window, statistics and soak options");
+  accepted("--single-thread", &o);
+  CHECK(o.single_thread, "single-thread");
   accepted("--stats --gl-check --licenses", &o);
   CHECK(o.stats && o.gl_check && o.licences, "stats, gl-check, licences");
   accepted("--licences", &o);

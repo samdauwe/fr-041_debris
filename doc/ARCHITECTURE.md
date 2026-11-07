@@ -74,7 +74,7 @@ to the target, because the stateful effects (chain lines, water) depend on every
 | audio (SDL) | `audio_callback` calls `paudio_render` |
 
 The worker never calls OpenGL. Progress and cancellation travel through `SDL_AtomicInt`; the audio callback and the main
-thread meet at `SDL_LockAudioStream`.
+thread meet at `SDL_LockAudioStream`. With `--single-thread` there is no worker: see below.
 
 ## Determinism
 
@@ -87,15 +87,21 @@ The pictures and the sound are checked against the original arithmetic, so:
   and spells the MMX word arithmetic of the bitmap operators out lane by lane;
 * output does not depend on the chunk size of the audio callback or on the frame rate of the display.
 
-## Where the web build will touch this code
+## The web build
 
-The headers need no change. In `main.c` the following have no direct equivalent in a browser and are the places to adapt:
+The headers needed no change; `main.c` adapts in four places, each also usable natively:
 
-* the main loop: a browser needs a frame callback instead of a loop that blocks until the demo ends;
-* the loading worker: threads need cross-origin isolation, otherwise `wz3_rt_precalc` has to run in slices on the main thread
-  (the host sink and the cancel callback already allow that);
-* file access: the assets are read with `fopen` next to the executable;
-* the GL context request (OpenGL ES 3.0 is tried first and works as it is) and `SDL_GL_GetProcAddress` for the loader;
-* the soak, the `/proc` based memory probe and the other measurement options are native-only.
+* **Loop.** The live loop is `live_begin()`, `live_frame()` (one iteration, returns 0 when over) and `live_finish()`. Native runs
+  them in a `while`; Emscripten hands `live_frame()` to `emscripten_set_main_loop_arg`, which follows `requestAnimationFrame`.
+  When the demo ends the last picture stays and the page's `Module.onEnded(code)` is called.
+* **Loading without a worker.** A page has no worker thread unless it is cross-origin isolated (COOP/COEP response headers), which
+  static hosting such as GitHub Pages does not send. `precalc_run()` therefore runs the precalculation in slices of `LOAD_SLICE_NS`
+  (12 ms) between two pictures of the loader bar: the host `cancelled` callback stops the runtime at the next operator when the
+  slice is used up, and `wz3_rt_precalc` and `pscene_eval_textures` resume where they stopped with the result of an uninterrupted
+  run. The same code runs natively with `--single-thread`, which the test runner exercises (`player_*_single*`).
+* **GL functions.** `proc_address()` returns the linked WebGL 2 entry points directly, from the same function list `glr` loads
+  (`GLR_GL_FUNCTIONS`); `glGetProcAddress` is not involved.
+* **Files.** The two data files are linked into the module (`--embed-file`) and found by the existing `assets/` lookup.
 
-The plan for the web build (SDL3 with Emscripten, OpenGL ES 3 as WebGL 2) is `wasm_c99_port_fr_041_port_plan.md` in the reference repository.
+The build is `cmake/DebrisWeb.cmake`, the page `web/index.html`; [README](../README.md#webassembly) has the commands. Not in the
+browser: the soak, the `/proc` memory probe and the other measurement options.

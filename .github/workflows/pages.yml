@@ -1,0 +1,63 @@
+name: Pages
+
+# Builds the WebAssembly player and publishes it to GitHub Pages. Pull requests only build it.
+# One-time setup: Settings > Pages > Build and deployment > Source: GitHub Actions.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Emscripten's own wasm-opt is used: an older system Binaryen rejects the flags of a newer emscripten.
+  EMSDK_VERSION: 7.0.0
+  WASM_BUDGET_BYTES: 4194304
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: ${{ env.EMSDK_VERSION }}
+          actions-cache-folder: emsdk-cache
+
+      - name: Configure
+        run: cmake --preset web
+
+      - name: Build
+        run: cmake --build --preset web --parallel
+
+      - name: Check the output
+        run: |
+          ls -l build/web/dist
+          test "$(stat -c %s build/web/dist/index.wasm)" -le "$WASM_BUDGET_BYTES"
+          grep -q createDebris build/web/dist/index.js
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/web/dist
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

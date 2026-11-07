@@ -13,6 +13,12 @@ target_include_directories(debris PRIVATE ${PROJECT_BINARY_DIR}/generated)
 target_link_libraries(debris PRIVATE debris::headers SDL3::SDL3)
 debris_configure_target(debris)
 
+if(EMSCRIPTEN)
+  include(DebrisWeb)
+  debris_configure_web(debris)
+  return()
+endif()
+
 # the data the player looks for next to the executable
 add_custom_command(TARGET debris POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:debris>/assets

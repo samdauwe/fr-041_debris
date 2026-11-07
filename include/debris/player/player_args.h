@@ -42,6 +42,7 @@ typedef struct poptions {
   const char *texture_quality;        /* --texture-quality as given, "high" by default */
   int texture_offset;                 /* the size exponent offset it means: 0 high, -1 normal, -2 low, down to -3 */
   int stats;                          /* --stats: one statistics line per second on stdout */
+  int single_thread;                  /* --single-thread: load in time slices on the main thread instead of a worker (always so on the web) */
   int gl_check;                       /* --gl-check: count GL objects and poll glGetError (reported and checked at exit) */
   int soak_loops;                     /* --soak N: play the whole demo N times in deterministic steps (0: off) */
   double soak_limit;                  /* --soak-limit S: stop after S wall seconds even in the middle of a loop (< 0: none) */
@@ -262,6 +263,8 @@ PLAYER_ARGS_API int poptions_parse(int argc, char **argv, poptions *o, char *err
       o->self_check = 1;
     else if (!strcmp(arg, "--stats"))
       o->stats = 1;
+    else if (!strcmp(arg, "--single-thread"))
+      o->single_thread = 1;
     else if (!strcmp(arg, "--gl-check"))
       o->gl_check = 1;
     else if (!strcmp(arg, "--licenses") || !strcmp(arg, "--licences"))

@@ -36,13 +36,21 @@
       "displayName": "Release with -march=native (proves that FMA contraction stays off)",
       "inherits": "base",
       "cacheVariables": { "CMAKE_BUILD_TYPE": "Release", "CMAKE_C_FLAGS": "-march=native" }
+    },
+    {
+      "name": "web",
+      "displayName": "WebAssembly (Emscripten; needs EMSDK, see README)",
+      "inherits": "base",
+      "toolchainFile": "$env{EMSDK}/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
     }
   ],
   "buildPresets": [
     { "name": "release", "configurePreset": "release" },
     { "name": "debug", "configurePreset": "debug" },
     { "name": "asan", "configurePreset": "asan" },
-    { "name": "native-march", "configurePreset": "native-march" }
+    { "name": "native-march", "configurePreset": "native-march" },
+    { "name": "web", "configurePreset": "web" }
   ],
   "testPresets": [
     { "name": "release", "configurePreset": "release", "output": { "outputOnFailure": true } },

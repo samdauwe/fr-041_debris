@@ -1,15 +1,20 @@
 /* debris: the player. SDL3 window and OpenGL ES 3 (or GL 3.3 core) context, V2 audio and the werkkzeug3 runtime.
  *
  *   debris [--kx PATH] [--loader PATH] [--size WxH] [--fullscreen] [--no-vsync] [--no-audio]
- *          [--texture-quality high|normal|low|-3..0] [--licenses]
+ *          [--texture-quality high|normal|low|-3..0] [--single-thread] [--licenses]
  *
  * Without --kx / --loader the assets are looked up in <exe dir>/assets and ./assets.
  *
  * Playing: the loader tune plays while one worker thread precalculates the runtime (generates the meshes, prepares the geometry
  * a scene draws and evaluates the textures the materials sample: player_load.h, player_scene.h) and the main thread draws the
  * loader bar from the worker's progress and uploads the results in slices. Quitting while it loads cancels the worker at its
- * next operator. Then the loader synth is destroyed, the party song starts and the visual clock follows the frames the audio
- * device has played (player_core.h).
+ * next operator. With --single-thread (always on the web, where a page has no worker thread) the main thread does that work in
+ * slices of LOAD_SLICE_NS between two pictures of the loader bar: the runtime stops at an operator when the slice is over and
+ * continues in the next one, with the same result. Then the loader synth is destroyed, the party song starts and the visual
+ * clock follows the frames the audio device has played (player_core.h).
+ *
+ * The live loop is live_begin() / live_frame() / live_finish(): a native process runs them in a loop, the browser calls live_frame()
+ * from requestAnimationFrame.
  *
  * Keys: Space pause, Left/Right seek -/+10 s, F fullscreen, C credits, F10 statistics overlay, F11 statistics on stdout,
  * Esc quit. Keys pressed while loading are ignored: there is no clock to pause or seek yet.
@@ -61,6 +66,11 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
+#if defined(__EMSCRIPTEN__)
+#include <GLES3/gl3.h>
+#include <emscripten.h>
+#endif
+
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -80,6 +90,7 @@
 #define AUDIO_CHUNK_FRAMES        4096
 #define FRAME_RING                512
 #define CURSOR_IDLE_NS            2000000000ull /* the pointer hides after this long without mouse activity */
+#define LOAD_SLICE_NS             12000000ull   /* runtime and texture evaluation time per loop iteration when loading without a worker thread */
 
 typedef enum phase { PHASE_LOADING, PHASE_PLAYING, PHASE_SEEKING } phase;
 
@@ -141,10 +152,19 @@ static void wrap_glDeleteShader(GLRuint id)
 
 static void *proc_address(const char *name)
 {
+#if defined(__EMSCRIPTEN__)
+  /* The GL functions are linked directly: no glGetProcAddress table, and nothing glr does not call is linked. */
+#define PGL_WEB_FN(ret, fn, args) \
+  if (!strcmp(name, #fn)) return (void *)fn;
+  GLR_GL_FUNCTIONS(PGL_WEB_FN)
+#undef PGL_WEB_FN
+  return NULL;
+#else
   const SDL_FunctionPointer f = SDL_GL_GetProcAddress(name);
   void *p = NULL;
   memcpy(&p, &f, sizeof p < sizeof f ? sizeof p : sizeof f);
   return p;
+#endif
 }
 
 static void *counting_loader(const char *name)
@@ -214,8 +234,12 @@ typedef struct app {
   pscene scene;                                /* geometry, shadow data, textures; the worker fills it, the GL thread reads it after the join */
   int warming;                                 /* the worker is done and the GL thread is uploading */
   int worker_joined;
+  int load_stage;                              /* without a worker: 0 runtime, 1 scene plan, 2 textures, 3 done */
+  uint64_t slice_deadline_ns;                  /* without a worker: the host stops the load at the next operator once this has passed (0: never) */
+  uint64_t live_start_ns;                      /* when the live loop began */
+  int live_rc;                                 /* exit status of the live loop, valid once live_frame() returns 0 */
   uint32_t warm_done, warm_total;
-  uint64_t render_errors; /* frames glr reported a failure for */
+  uint64_t render_errors;                      /* frames glr reported a failure for */
   /* the window, statistics and the screens of the player itself */
   int minimized;
   int show_credits, show_stats;
@@ -355,7 +379,11 @@ static int64_t audio_played_frames(app *a)
 
 /* ---- runtime ---- */
 
-static int host_cancelled(void *user) { return SDL_GetAtomicInt(&((app *)user)->cancel_load); }
+static int host_cancelled(void *user)
+{
+  app *a = (app *)user;
+  return SDL_GetAtomicInt(&a->cancel_load) || (a->slice_deadline_ns && SDL_GetTicksNS() >= a->slice_deadline_ns);
+}
 static void host_progress(void *user, uint32_t op, uint32_t done, uint32_t total)
 {
   app *a = (app *)user;
@@ -366,16 +394,29 @@ static void host_progress(void *user, uint32_t op, uint32_t done, uint32_t total
 static void host_texture_progress(void *user, uint32_t done, uint32_t total)
 {
   app *a = (app *)user;
-  SDL_SetAtomicInt(&a->texture_done, (int)done);
+  if ((int)done > SDL_GetAtomicInt(&a->texture_done)) SDL_SetAtomicInt(&a->texture_done, (int)done); /* a resumed evaluation counts from 0 again */
   SDL_SetAtomicInt(&a->texture_total, (int)total);
+}
+
+/* Runs the precalculation until it is done or, with a deadline, until the host asks it to stop; a stopped load resumes where it was in
+   the next call and ends in the state of an uninterrupted one. Returns 1 when finished (precalc_result), 0 when there is more. */
+static int precalc_run(app *a, uint64_t budget_ns)
+{
+  a->slice_deadline_ns = budget_ns ? SDL_GetTicksNS() + budget_ns : 0;
+  wz3_result r = WZ3_OK;
+  if (a->load_stage == 0 && (r = wz3_rt_precalc(a->rt)) == WZ3_OK) a->load_stage = 1;
+  if (r == WZ3_OK && a->load_stage == 1 && (r = pscene_plan(&a->scene)) == WZ3_OK) a->load_stage = 2;
+  if (r == WZ3_OK && a->load_stage == 2 && (r = pscene_eval_textures(&a->scene, host_texture_progress, host_cancelled, a)) == WZ3_OK) a->load_stage = 3;
+  a->slice_deadline_ns = 0;
+  if (r == WZ3_ERR_CANCELLED && !SDL_GetAtomicInt(&a->cancel_load)) return 0;
+  a->precalc_result = r;
+  return 1;
 }
 
 static int SDLCALL precalc_main(void *user)
 {
   app *a = (app *)user;
-  a->precalc_result = wz3_rt_precalc(a->rt);
-  if (a->precalc_result == WZ3_OK) a->precalc_result = pscene_plan(&a->scene);
-  if (a->precalc_result == WZ3_OK) a->precalc_result = pscene_eval_textures(&a->scene, host_texture_progress, host_cancelled, a);
+  precalc_run(a, 0);
   SDL_SetAtomicInt(&a->worker_done, 1);
   return 0;
 }
@@ -538,7 +579,7 @@ static void frame_percentiles(const app *a, double *fps, double *p50, double *p9
   if (!n) return;
   float sorted[FRAME_RING];
   double sum = 0;
-  memcpy(sorted, a->frame_ms, n * sizeof sorted[0]);
+  memcpy(sorted, a->frame_ms, (size_t)n * sizeof sorted[0]);
   for (uint64_t i = 0; i < n; i++) sum += sorted[i];
   for (uint64_t i = 1; i < n; i++) { /* insertion sort: 512 entries, rarely called */
     const float v = sorted[i];
@@ -963,123 +1004,145 @@ static void cursor_idle(app *a, uint64_t now)
   a->cursor_hidden = 1;
 }
 
-static int run_live(app *a)
+static int live_begin(app *a)
 {
-  int quit = 0;
-  const uint64_t start_ns = SDL_GetTicksNS();
-  a->cursor_active_ns = start_ns;
+  a->live_start_ns = SDL_GetTicksNS();
+  a->cursor_active_ns = a->live_start_ns;
   a->phase = PHASE_LOADING;
   if (a->opt.audio) {
     if (paudio_play_loader(&a->audio, a->loader_bytes, a->loader_size) != V2_OK) fprintf(stderr, "debris: loader song failed, continuing silent\n");
   }
+  if (a->opt.single_thread) return 0; /* the loop loads in slices */
   a->worker = SDL_CreateThread(precalc_main, "precalc", a);
   if (!a->worker) return fail("worker thread", SDL_GetError());
-  while (!quit) {
-    SDL_Event e;
-    while (SDL_PollEvent(&e)) {
-      if (e.type == SDL_EVENT_QUIT)
-        quit = 1;
-      else if (e.type == SDL_EVENT_KEY_DOWN && !e.key.repeat)
-        quit |= handle_key(a, e.key.key);
-      else if (e.type == SDL_EVENT_MOUSE_MOTION || e.type == SDL_EVENT_MOUSE_BUTTON_DOWN || e.type == SDL_EVENT_MOUSE_BUTTON_UP ||
-               e.type == SDL_EVENT_MOUSE_WHEEL || e.type == SDL_EVENT_WINDOW_MOUSE_LEAVE || e.type == SDL_EVENT_WINDOW_FOCUS_LOST)
-        cursor_activity(a, SDL_GetTicksNS());
-    }
-    cursor_idle(a, SDL_GetTicksNS());
-    a->minimized = (SDL_GetWindowFlags(a->window) & SDL_WINDOW_MINIMIZED) != 0; /* nothing to draw into; the show goes on */
-    if (!fit_renderer(a, 0)) return 1;                                          /* the drawable changed (resize, fullscreen, another display's pixel density) */
-    const uint64_t now = SDL_GetTicksNS();
-    if (a->phase != PHASE_LOADING) { /* key scripts and --play-for count from the party start, so the load time cannot matter */
-      const double played = (double)(now - a->play_start_ns) / 1e9;
-      while (a->next_script < a->opt.n_script && played >= a->opt.script[a->next_script].time)
-        quit |= handle_script_key(a, a->opt.script[a->next_script++].key);
-      if (a->opt.play_for >= 0 && played >= a->opt.play_for) quit = 1;
-    }
-    if (a->opt.exit_after >= 0 && (double)(now - start_ns) / 1e9 >= a->opt.exit_after) quit = 1;
+  return 0;
+}
 
-    if (a->phase == PHASE_LOADING) {
-      if (a->worker && SDL_GetAtomicInt(&a->worker_done)) {
-        SDL_WaitThread(a->worker, NULL);
-        a->worker = NULL;
-        if (a->precalc_result != WZ3_OK) return fail("precalc", wz3_result_string(a->precalc_result));
+static int live_stop(app *a, int rc)
+{
+  a->live_rc = rc;
+  return 0;
+}
+
+/* One iteration of the live loop: events, the load or the clock, the picture. Returns 1 to go on and 0 when the loop is over (live_rc). */
+static int live_frame(app *a)
+{
+  int quit = 0;
+  const uint64_t start_ns = a->live_start_ns;
+  SDL_Event e;
+  while (SDL_PollEvent(&e)) {
+    if (e.type == SDL_EVENT_QUIT)
+      quit = 1;
+    else if (e.type == SDL_EVENT_KEY_DOWN && !e.key.repeat)
+      quit |= handle_key(a, e.key.key);
+    else if (e.type == SDL_EVENT_MOUSE_MOTION || e.type == SDL_EVENT_MOUSE_BUTTON_DOWN || e.type == SDL_EVENT_MOUSE_BUTTON_UP ||
+             e.type == SDL_EVENT_MOUSE_WHEEL || e.type == SDL_EVENT_WINDOW_MOUSE_LEAVE || e.type == SDL_EVENT_WINDOW_FOCUS_LOST)
+      cursor_activity(a, SDL_GetTicksNS());
+  }
+  cursor_idle(a, SDL_GetTicksNS());
+  a->minimized = (SDL_GetWindowFlags(a->window) & SDL_WINDOW_MINIMIZED) != 0; /* nothing to draw into; the show goes on */
+  if (!fit_renderer(a, 0)) return live_stop(a, 1);                            /* the drawable changed (resize, fullscreen, another display's pixel density) */
+  const uint64_t now = SDL_GetTicksNS();
+  if (a->phase != PHASE_LOADING) { /* key scripts and --play-for count from the party start, so the load time cannot matter */
+    const double played = (double)(now - a->play_start_ns) / 1e9;
+    while (a->next_script < a->opt.n_script && played >= a->opt.script[a->next_script].time) quit |= handle_script_key(a, a->opt.script[a->next_script++].key);
+    if (a->opt.play_for >= 0 && played >= a->opt.play_for) quit = 1;
+  }
+  if (a->opt.exit_after >= 0 && (double)(now - start_ns) / 1e9 >= a->opt.exit_after) quit = 1;
+
+  if (a->phase == PHASE_LOADING) {
+    if (a->opt.single_thread) {
+      if (!a->worker_joined && precalc_run(a, LOAD_SLICE_NS)) {
+        if (a->precalc_result != WZ3_OK) return live_stop(a, fail("precalc", wz3_result_string(a->precalc_result)));
         a->worker_joined = 1;
       }
-      if (a->worker_joined) { /* the GL thread's share: Render operators, textures and geometry into GL, in slices */
-        const int warm = warm_scene(a, WARM_SLICE_NS);
-        if (warm < 0) return 1;
-        if (warm > 0) {
-          start_party(a);
-          continue;
-        }
+    } else if (a->worker && SDL_GetAtomicInt(&a->worker_done)) {
+      SDL_WaitThread(a->worker, NULL);
+      a->worker = NULL;
+      if (a->precalc_result != WZ3_OK) return live_stop(a, fail("precalc", wz3_result_string(a->precalc_result)));
+      a->worker_joined = 1;
+    }
+    if (a->worker_joined) { /* the GL thread's share: Render operators, textures and geometry into GL, in slices */
+      const int warm = warm_scene(a, WARM_SLICE_NS);
+      if (warm < 0) return live_stop(a, 1);
+      if (warm > 0) {
+        start_party(a);
+        return 1;
       }
-      if (!a->minimized) {
-        glr_present_progress(a->renderer, ploader_stages((uint32_t)SDL_GetAtomicInt(&a->progress_done), (uint32_t)SDL_GetAtomicInt(&a->progress_total),
-                                                         (uint32_t)SDL_GetAtomicInt(&a->texture_done), (uint32_t)SDL_GetAtomicInt(&a->texture_total),
-                                                         a->warm_done, a->warm_total));
-        draw_overlays(a, 1); /* the credits stay on the loader screen */
-      }
-    } else if (a->phase == PHASE_SEEKING) {
-      while (SDL_GetTicksNS() - now < REPLAY_SLICE_NS && a->replay_sample < a->replay_target) {
-        a->replay_sample = pseek_next_sample(a->replay_sample, a->replay_target, SONG_RATE, REPLAY_FPS);
-        const wz3_result res = runtime_step(a, a->replay_sample);
-        if (res != WZ3_OK) return fail("seek replay", wz3_result_string(res));
-      }
-      if (a->replay_sample >= a->replay_target) finish_seek(a);
-      if (!a->minimized) {
-        glr_present_loading(a->renderer, (double)(now - start_ns) / 1e9 * 0.7);
-        draw_overlays(a, 0);
-      }
-    } else {
-      if (!a->paused) {
-        /* what the device has played, and the time it was asked: read the time after the audio, so that the loop's own delay (events, a slow
+    }
+    if (!a->minimized) {
+      glr_present_progress(a->renderer, ploader_stages((uint32_t)SDL_GetAtomicInt(&a->progress_done), (uint32_t)SDL_GetAtomicInt(&a->progress_total),
+                                                       (uint32_t)SDL_GetAtomicInt(&a->texture_done), (uint32_t)SDL_GetAtomicInt(&a->texture_total),
+                                                       a->warm_done, a->warm_total));
+      draw_overlays(a, 1); /* the credits stay on the loader screen */
+    }
+  } else if (a->phase == PHASE_SEEKING) {
+    while (SDL_GetTicksNS() - now < REPLAY_SLICE_NS && a->replay_sample < a->replay_target) {
+      a->replay_sample = pseek_next_sample(a->replay_sample, a->replay_target, SONG_RATE, REPLAY_FPS);
+      const wz3_result res = runtime_step(a, a->replay_sample);
+      if (res != WZ3_OK) return live_stop(a, fail("seek replay", wz3_result_string(res)));
+    }
+    if (a->replay_sample >= a->replay_target) finish_seek(a);
+    if (!a->minimized) {
+      glr_present_loading(a->renderer, (double)(now - start_ns) / 1e9 * 0.7);
+      draw_overlays(a, 0);
+    }
+  } else {
+    if (!a->paused) {
+      /* what the device has played, and the time it was asked: read the time after the audio, so that the loop's own delay (events, a slow
            frame under a sanitizer) can only make the clock lag the wall time, never lead it */
-        const int64_t played_frames = audio_played_frames(a);
-        const uint64_t sampled = SDL_GetTicksNS();
-        pclock_report(&a->clock, played_frames, sampled);
-        int64_t clock = pclock_now(&a->clock, sampled);
-        if (a->duration_samples > 0 && clock >= a->duration_samples) {
-          clock = a->duration_samples;
-          quit = 1;
-        }
-        if (a->opt.self_check) {
-          const int64_t wall = (int64_t)((double)(sampled - a->t0_ns) * SONG_RATE / 1e9);
-          if (clock < a->last_clock && a->violations++ < 5)
-            fprintf(stderr, "self-check: clock went backwards %lld -> %lld\n", (long long)a->last_clock, (long long)clock);
-          /* SDL3 does not expose the output latency of a real device (its buffers beyond the one it reports), so the
+      const int64_t played_frames = audio_played_frames(a);
+      const uint64_t sampled = SDL_GetTicksNS();
+      pclock_report(&a->clock, played_frames, sampled);
+      int64_t clock = pclock_now(&a->clock, sampled);
+      if (a->duration_samples > 0 && clock >= a->duration_samples) {
+        clock = a->duration_samples;
+        quit = 1;
+      }
+      if (a->opt.self_check) {
+        const int64_t wall = (int64_t)((double)(sampled - a->t0_ns) * SONG_RATE / 1e9);
+        if (clock < a->last_clock && a->violations++ < 5)
+          fprintf(stderr, "self-check: clock went backwards %lld -> %lld\n", (long long)a->last_clock, (long long)clock);
+        /* SDL3 does not expose the output latency of a real device (its buffers beyond the one it reports), so the
              bound there is one device buffer. The dummy driver consumes in wall time but in timer steps; when a loop iteration is slow
              (a sanitizer, a loaded machine) the step it just took is noticed late, so it gets 5 ms: still far below the 100 ms a clock
              that extrapolates wrongly would lead by. */
-          const int64_t slack = SONG_RATE / 1000 + (a->dummy_audio ? 4 * SONG_RATE / 1000 : (int64_t)a->device_latency_frames);
-          if (clock > wall + slack && a->violations++ < 5)
-            fprintf(stderr, "self-check: clock leads wall time by %lld frames (allowed %lld)\n", (long long)(clock - wall), (long long)slack);
-        }
-        a->last_clock = clock;
-        if (clock > a->sample) {
-          const wz3_result res = runtime_frame(a, clock);
-          if (res != WZ3_OK) return fail("frame", wz3_result_string(res));
-          a->sample = clock;
-        }
-        if (a->sample - a->snaps.last_sample >= (int64_t)SNAPSHOT_INTERVAL_SECONDS * SONG_RATE) snapshot_take(a, a->sample);
+        const int64_t slack = SONG_RATE / 1000 + (a->dummy_audio ? 4 * SONG_RATE / 1000 : (int64_t)a->device_latency_frames);
+        if (clock > wall + slack && a->violations++ < 5)
+          fprintf(stderr, "self-check: clock leads wall time by %lld frames (allowed %lld)\n", (long long)(clock - wall), (long long)slack);
       }
-      if (!a->minimized) {
-        render_frame(a);
-        draw_overlays(a, 0);
+      a->last_clock = clock;
+      if (clock > a->sample) {
+        const wz3_result res = runtime_frame(a, clock);
+        if (res != WZ3_OK) return live_stop(a, fail("frame", wz3_result_string(res)));
+        a->sample = clock;
       }
+      if (a->sample - a->snaps.last_sample >= (int64_t)SNAPSHOT_INTERVAL_SECONDS * SONG_RATE) snapshot_take(a, a->sample);
     }
-    if (a->minimized)
-      SDL_Delay(10);
-    else {
-      SDL_GL_SwapWindow(a->window);
-      poll_gl_errors(a);
-    }
-    a->frame_ms[a->frames % FRAME_RING] = (float)((double)(SDL_GetTicksNS() - (a->last_frame_ns ? a->last_frame_ns : now)) / 1e6);
-    a->last_frame_ns = SDL_GetTicksNS();
-    a->frames++;
-    if (a->opt.stats && a->last_frame_ns - a->stats_print_ns >= 1000000000ull && a->phase != PHASE_LOADING) {
-      a->stats_print_ns = a->last_frame_ns;
-      print_stats(a);
+    if (!a->minimized) {
+      render_frame(a);
+      draw_overlays(a, 0);
     }
   }
+  if (a->minimized)
+    SDL_Delay(10);
+  else {
+    SDL_GL_SwapWindow(a->window);
+    poll_gl_errors(a);
+  }
+  a->frame_ms[a->frames % FRAME_RING] = (float)((double)(SDL_GetTicksNS() - (a->last_frame_ns ? a->last_frame_ns : now)) / 1e6);
+  a->last_frame_ns = SDL_GetTicksNS();
+  a->frames++;
+  if (a->opt.stats && a->last_frame_ns - a->stats_print_ns >= 1000000000ull && a->phase != PHASE_LOADING) {
+    a->stats_print_ns = a->last_frame_ns;
+    print_stats(a);
+  }
+  return quit ? live_stop(a, 0) : 1;
+}
+
+/* What follows the live loop: stops a load that is still running and reports the self-check. Returns the exit status. */
+static int live_finish(app *a)
+{
   if (a->worker) { /* quit while loading: the worker stops at its next operator */
     SDL_SetAtomicInt(&a->cancel_load, 1);
     SDL_WaitThread(a->worker, NULL);
@@ -1087,6 +1150,9 @@ static int run_live(app *a)
     if (a->opt.self_check)
       printf("load: %s at %d of %d operators\n", a->precalc_result == WZ3_ERR_CANCELLED ? "cancelled" : "finished", SDL_GetAtomicInt(&a->progress_done),
              SDL_GetAtomicInt(&a->progress_total));
+  } else if (a->opt.single_thread && a->phase == PHASE_LOADING && a->opt.self_check) {
+    printf("load: %s at %d of %d operators\n", a->load_stage < 3 ? "cancelled" : "finished", SDL_GetAtomicInt(&a->progress_done),
+           SDL_GetAtomicInt(&a->progress_total));
   }
   if (a->opt.self_check) {
     const int64_t wall = (int64_t)((double)(SDL_GetTicksNS() - a->t0_ns) * SONG_RATE / 1e9);
@@ -1102,6 +1168,34 @@ static int run_live(app *a)
            (unsigned long long)a->frames, a->resizes_seen);
   }
   return a->violations ? 1 : 0;
+}
+
+#if defined(__EMSCRIPTEN__)
+/* The browser drives the loop (requestAnimationFrame); when the demo is over the last picture stays and the page is told. */
+static void web_frame(void *arg)
+{
+  app *a = (app *)arg;
+  if (live_frame(a)) return;
+  emscripten_cancel_main_loop();
+  if (!a->live_rc) live_finish(a);
+  EM_ASM(
+    {
+      if (Module.onEnded) Module.onEnded($0);
+    },
+    a->live_rc);
+}
+#endif
+
+static int run_live(app *a)
+{
+  if (live_begin(a)) return 1;
+#if defined(__EMSCRIPTEN__)
+  emscripten_set_main_loop_arg(web_frame, a, 0, 1); /* does not return */
+  return 0;
+#else
+  while (live_frame(a)) {}
+  return a->live_rc ? a->live_rc : live_finish(a);
+#endif
 }
 
 /* ---- the soak (--soak N): the whole demo N times in deterministic steps, with seeks, resizes and screens, GL objects and errors counted ---- */
@@ -1314,7 +1408,7 @@ int main(int argc, char **argv)
             "          [--texture-quality high|normal|low|-3..0]\n"
             "          [--time SECONDS [--screenshot PATH.ppm] [--overlay credits,stats] [--seek-check]] [--exit-after SECONDS] [--play-for SECONDS]\n"
             "          [--self-check [--script T:KEY,...] [--expect-position SECONDS]]\n"
-            "          [--stats] [--gl-check] [--soak LOOPS [--soak-limit SECONDS]] [--licenses]\n"
+            "          [--stats] [--gl-check] [--soak LOOPS [--soak-limit SECONDS]] [--licenses] [--single-thread]\n"
             "          [--times T1,T2,... --screenshot-dir DIR]\n",
             error, argv[0]);
     free(a);
@@ -1326,6 +1420,9 @@ int main(int argc, char **argv)
     return ok ? 0 : 1;
   }
   if (a->opt.soak_loops) a->opt.gl_check = 1; /* the soak is about objects and errors */
+#if defined(__EMSCRIPTEN__)
+  a->opt.single_thread = 1;                   /* a page cannot have a worker thread without COOP/COEP headers, which static hosting does not send */
+#endif
   paudio_init(&a->audio, SONG_RATE);
   if (!v2_fp_env_ok()) {
     rc = fail("floating point environment", "subnormals are flushed (fast-math build?)");
